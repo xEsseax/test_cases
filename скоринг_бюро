@@ -1,0 +1,60 @@
+
+# user (id, name)
+# picture (id, user_id, image_path)
+
+
+1)  Вывести количество картинок и количество уникальных картинок у каждого пользователя
+
+SELECT  u.id,
+        u.name,
+        COALESCE(COUNT(p.id), 0) AS pictures_quantity,
+        COALESCE(COUNT(DISTINCT p.image_path), 0) AS unique_pic_quantity
+FROM user AS u
+LEFT JOIN pictures AS p ON u.id = p.user_id
+GROUP BY u.id;
+
+2) Вывести сколько пользователей у которых картинок больше 3
+
+SELECT COUNT(DISTINCT user_id)
+FROM picture
+WHERE user_id IN (SELECT user_id
+                        FROM picture
+                        GROUP BY user_id
+                        HAVING COUNT(id)>3)
+
+3) Вывести пользователей, у которых нет картинок
+
+SELECT *
+FROM user
+WHERE id NOT IN (SELECT DISTINCT user_id
+                         FROM picture
+                         WHERE image_path IS NOT NULL)
+
+4)  Вывести пользователей, у которых есть картинка
+
+SELECT *
+FROM user
+WHERE id IN (SELECT DISTINCT user_id
+                         FROM picture
+                         WHERE image_path IS NOT NULL)
+
+5)  Вывести пользователя, у которого 2-ой результат по количеству картинок
+
+# user (id, name)
+# picture (id, user_id, image_path)
+
+WITH num_pic AS (SELECT user_id,
+                        COUNT(*) AS num
+                FROM picture
+                WHERE image_path IS NOT NULL
+                GROUP BY user_id)
+SELECT *
+FROM user
+WHERE id = (SELECT user_id
+                   FROM num_pic 
+                   WHERE num < (SELECT MAX(num)
+                                FROM num_pic) 
+                   ORDER BY num DESC
+                   LIMIT 1)      
+
+
