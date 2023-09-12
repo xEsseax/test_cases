@@ -44,6 +44,9 @@ WHERE id NOT IN (SELECT DISTINCT user_id
 
 4)  Вывести пользователей, у которых есть картинка
 
+Комментарий по выполнению: выводим пользователей, у которых есть хотя бы одна картинка. 
+Тогда задача переформулируется в вывод всех пользователей, которые не вошли в вывод предыдущего запроса.
+
 SELECT *
 FROM user
 WHERE id IN (SELECT DISTINCT user_id
@@ -51,9 +54,6 @@ WHERE id IN (SELECT DISTINCT user_id
                          WHERE image_path IS NOT NULL)
 
 5)  Вывести пользователя, у которого 2-ой результат по количеству картинок
-
-# user (id, name)
-# picture (id, user_id, image_path)
 
 WITH num_pic AS (SELECT user_id,
                         COUNT(*) AS num
